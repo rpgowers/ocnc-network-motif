@@ -3,7 +3,7 @@ import pylab
 import numpy as np
 import visualize
 
-n = 6
+n = 8
 N = 2*n
 ndict = {"I_e": 250.0, "tau_m": 20.0}
 exc = nest.Create("iaf_psc_alpha",n,params=ndict)

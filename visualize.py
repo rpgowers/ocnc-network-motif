@@ -1,6 +1,7 @@
 import nest
 import types
 import pydot
+from functools import reduce
 
 def plot_network(nodes, colors, filename, ext_conns=False,
                  plot_modelnames=False):
@@ -28,6 +29,7 @@ def plot_network(nodes, colors, filename, ext_conns=False,
         nest.NESTError("nodes must at least contain one node")
 
     nodes_types = map(lambda x: type(x), nodes)
+    nodes_types = list(nodes_types)
     homogeneous = reduce(
         lambda x, y: x == y and x or None, nodes_types) == nodes_types[0]
 
@@ -53,7 +55,7 @@ def plot_network(nodes, colors, filename, ext_conns=False,
             subgraph.add_node(pydot.Node(name=get_name(node), fillcolor=color, style="filled"))
         graph.add_subgraph(subgraph)
 
-    if nodes_types[0] not in (types.TupleType, types.ListType):
+    if nodes_types[0] not in (tuple, list):
         nodes = [nodes]
         
     for i, node_list in enumerate(nodes):
