@@ -13,6 +13,7 @@ def voltage_extract(dmm,n,plot=False):
       plt.ylabel('Membrane Voltage (mV)')
       plt.plot(ts_v,Vms.T)
       pdf.savefig()
+      plt.close()
 
   return ts_v, Vms
 
@@ -24,5 +25,12 @@ def voltage_psd(ts_v,Vms,plot=False):
   for i in np.arange(n):
     F = np.fft.rfft(Vms[i]-np.mean(Vms[i]))
     P[i] = abs(F)**2
+  if plot == True:
+    with PdfPages('voltage_psd_plot.pdf') as pdf:
+      plt.xlabel('Frequency (Hz)')
+      plt.ylabel('Power Spectral Density')
+      plt.plot(freq,P.T)
+      pdf.savefig()
+      plt.close()
 
   return P

@@ -33,7 +33,8 @@ nest.Connect(exc,spikedetector)
 nest.Simulate(100.0)
 
 dmm = nest.GetStatus(multimeter)
-t_sv, Vms = data_analysis.voltage_extract(dmm,n,plot=True)
+ts_v, Vms = data_analysis.voltage_extract(dmm,n,plot=True)
+PSD = data_analysis.voltage_psd(ts_v,Vms,plot=True)
 #Vms = dmm["events"]["V_m"]
 #ts_v = dmm["events"]["times"]
 dSD = nest.GetStatus(spikedetector,keys="events")[0]
