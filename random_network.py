@@ -1,5 +1,7 @@
 import nest
-import pylab
+import matplotlib.pylab as plt
+import matplotlib as mp
+from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 import visualize
 
@@ -35,3 +37,9 @@ ts_v = dmm["events"]["times"]
 dSD = nest.GetStatus(spikedetector,keys="events")[0]
 evs = dSD["senders"]
 ts_s = dSD["times"]
+
+with PdfPages('raster_plot.pdf') as pdf:
+  plt.plot(ts_s,evs,'.')
+  plt.xlabel("Time (ms)")
+  plt.ylabel("Neuron Number")
+  pdf.savefig(bbox_inches='tight')
