@@ -4,9 +4,10 @@ import matplotlib as mp
 from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 import visualize
+import data_analysis
 
-n = 8
-N = 2*n
+n = 2
+N = 1*n
 ndict = {"I_e": 250.0, "tau_m": 20.0}
 exc = nest.Create("iaf_psc_alpha",n,params=ndict)
 conn_dict_ee = {'rule': 'fixed_total_number', 'N': N, "autapses" : False}
@@ -22,18 +23,19 @@ colors = ["lightpink"]
 
 visualize.plot_network(nodes, colors, filename)
 
-multimeter = nest.Create("multimeter", n)
+multimeter = nest.Create("multimeter", 1)
 nest.SetStatus(multimeter, {"withtime":True, "record_from":["V_m"]})
 nest.Connect(multimeter, exc)
 
 spikedetector = nest.Create("spike_detector", params={"withgid": True, "withtime": True})
 nest.Connect(exc,spikedetector)
 
-nest.Simulate(1000.0)
+nest.Simulate(100.0)
 
-dmm = nest.GetStatus(multimeter)[0]
-Vms = dmm["events"]["V_m"]
-ts_v = dmm["events"]["times"]
+dmm = nest.GetStatus(multimeter)
+t_sv, Vms = data_analysis.voltage_extract(dmm,n,plot=True)
+#Vms = dmm["events"]["V_m"]
+#ts_v = dmm["events"]["times"]
 dSD = nest.GetStatus(spikedetector,keys="events")[0]
 evs = dSD["senders"]
 ts_s = dSD["times"]
