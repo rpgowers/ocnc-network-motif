@@ -1,7 +1,8 @@
-import nest;
+import nest
 import numpy as np
 import visualize
 import data_analysis
+import control_flow
 
 # nest.ResetKernel();
 msd = np.random.randint(100000)
@@ -9,8 +10,8 @@ N_vp = nest.GetKernelStatus(['total_num_virtual_procs'])[0]
 nest.SetKernelStatus({'grng_seed' : msd+N_vp})
 nest.SetKernelStatus({'rng_seeds' : range(msd+N_vp+1, msd+2*N_vp+1)})
 
-n = 5
-N = 5
+n, T_ms = control_flow.common_args()
+N = n
 p = 0.2
 ndict = {"I_e": 250.0, "tau_m": 20.0}
 exc = nest.Create("iaf_psc_alpha",n,params=ndict)
@@ -28,23 +29,24 @@ colors = ["lightpink"]
 
 visualize.plot_network(nodes, colors, filename)
 
-# multimeter = nest.Create("multimeter", 1)
-# nest.SetStatus(multimeter, {"withtime":True, "record_from":["V_m"]})
-# nest.Connect(multimeter, exc)
+multimeter = nest.Create("multimeter", 1)
+nest.SetStatus(multimeter, {"withtime":True, "record_from":["V_m"]})
+nest.Connect(multimeter, exc)
 
-# spikedetector = nest.Create("spike_detector", params={"withgid": True, "withtime": True})
-# nest.Connect(exc,spikedetector)
+spikedetector = nest.Create("spike_detector", params={"withgid": True, "withtime": True})
+nest.Connect(exc,spikedetector)
 
-# T_ms = 100.0
+nest.Simulate(T_ms)
 
-# nest.Simulate(T_ms)
+dmm = nest.GetStatus(multimeter)
+ts_v, Vms = data_analysis.voltage_extract(dmm,n,plot=True)
+PSD = data_analysis.voltage_psd(ts_v,Vms,plot=True)
 
-# dmm = nest.GetStatus(multimeter)
-# ts_v, Vms = data_analysis.voltage_extract(dmm,n,plot=True)
-# PSD = data_analysis.voltage_psd(ts_v,Vms,plot=True)
+dSD = nest.GetStatus(spikedetector,keys="events")[0]
 
-# dSD = nest.GetStatus(spikedetector,keys="events")[0]
-# evs = dSD["senders"]
-# ts_s = dSD["times"]
+data_analysis.spike_plot(dSD)
 
-# data_analysis.spike_plot(ts_s,evs)
+ISI = data_analysis.isi_extract(dSD,n,plot=True)
+print(ISI)
+hist = np.histogram(ISI, bins = 5)
+print(hist)

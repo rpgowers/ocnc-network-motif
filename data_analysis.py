@@ -36,9 +36,28 @@ def voltage_psd(ts_v,Vms,plot=False):
 
   return P
 
-def spike_plot(ts_s,evs):
+def isi_extract(dSD,n,plot=False):
+  evs = dSD["senders"]
+  ts_s = dSD["times"]
+  isi = []
+  for i in 1+np.arange(n):
+    idx = np.where(evs==i)[0]
+    isi.append(np.diff(ts_s[idx]))
+  isi = np.vstack(isi) # this will break if the neurons don't have the same number of spikes
+  if plot == True:
+    with PdfPages('isi_histogram.pdf') as pdf:
+      plt.hist(isi.flatten())
+      pdf.savefig()
+      plt.close()
+  return isi
+
+
+def spike_plot(dSD):
+  evs = dSD["senders"]
+  ts_s = dSD["times"]
   with PdfPages('raster_plot.pdf') as pdf:
     plt.plot(ts_s,evs,'.')
     plt.xlabel("Time (ms)")
     plt.ylabel("Neuron Number")
     pdf.savefig(bbox_inches='tight')
+    plt.close()
