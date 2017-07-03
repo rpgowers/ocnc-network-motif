@@ -20,17 +20,25 @@ def voltage_extract(dmm,n,plot=False):
 def voltage_psd(ts_v,Vms,plot=False):
   n = len(Vms)
   timestep = (ts_v[1]-ts_v[0])/1000
+  N = len(ts_v)
   freq = np.fft.rfftfreq(len(ts_v), d=timestep)
   P = np.zeros([n,len(freq)])
   for i in np.arange(n):
-    F = np.fft.rfft(Vms[i]-np.mean(Vms[i]))
+    F = np.fft.rfft(Vms[i]-np.mean(Vms[i]))*timestep
     P[i] = abs(F)**2
   if plot == True:
     with PdfPages('voltage_psd_plot.pdf') as pdf:
       plt.xlabel('Frequency (Hz)')
-      plt.ylabel('Power Spectral Density')
+      plt.ylabel('Power Spectral Density ($\mu$V/Hz)')
       plt.plot(freq,P.T)
       pdf.savefig()
       plt.close()
 
   return P
+
+def spike_plot(ts_s,evs):
+  with PdfPages('raster_plot.pdf') as pdf:
+    plt.plot(ts_s,evs,'.')
+    plt.xlabel("Time (ms)")
+    plt.ylabel("Neuron Number")
+    pdf.savefig(bbox_inches='tight')

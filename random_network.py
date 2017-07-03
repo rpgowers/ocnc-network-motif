@@ -1,10 +1,10 @@
 import nest
-import matplotlib.pylab as plt
-import matplotlib as mp
-from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
+import sys
 import visualize
 import data_analysis
+
+#ST_ms = float(sys.argv[0]) # need to fix with argparse
 
 n = 2
 N = 1*n
@@ -30,19 +30,16 @@ nest.Connect(multimeter, exc)
 spikedetector = nest.Create("spike_detector", params={"withgid": True, "withtime": True})
 nest.Connect(exc,spikedetector)
 
-nest.Simulate(100.0)
+T_ms = 100.0
+
+nest.Simulate(T_ms)
 
 dmm = nest.GetStatus(multimeter)
 ts_v, Vms = data_analysis.voltage_extract(dmm,n,plot=True)
 PSD = data_analysis.voltage_psd(ts_v,Vms,plot=True)
-#Vms = dmm["events"]["V_m"]
-#ts_v = dmm["events"]["times"]
+
 dSD = nest.GetStatus(spikedetector,keys="events")[0]
 evs = dSD["senders"]
 ts_s = dSD["times"]
 
-with PdfPages('raster_plot.pdf') as pdf:
-  plt.plot(ts_s,evs,'.')
-  plt.xlabel("Time (ms)")
-  plt.ylabel("Neuron Number")
-  pdf.savefig(bbox_inches='tight')
+data_analysis.spike_plot(ts_s,evs)
