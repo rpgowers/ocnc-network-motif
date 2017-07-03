@@ -1,18 +1,16 @@
 import nest;
 import numpy as np
-import sys
 import visualize
 import data_analysis
 
-nest.ResetKernel();
+# nest.ResetKernel();
+msd = np.random.randint(100000)
+N_vp = nest.GetKernelStatus(['total_num_virtual_procs'])[0]
+nest.SetKernelStatus({'grng_seed' : msd+N_vp})
+nest.SetKernelStatus({'rng_seeds' : range(msd+N_vp+1, msd+2*N_vp+1)})
 
-val = np.random.randint(10000)
-print(val)
-
-nest.SetKernelStatus({'grng_seed' : val})
-
-n = 8
-N = 2
+n = 5
+N = 5
 p = 0.2
 ndict = {"I_e": 250.0, "tau_m": 20.0}
 exc = nest.Create("iaf_psc_alpha",n,params=ndict)
@@ -22,7 +20,7 @@ conn_dict_bern = {'rule': 'pairwise_bernoulli', 'p': p, "autapses" : False}
 Jee = 20.0
 d = 1.0
 syn_dict_ee = {"delay": d, "weight": Jee}
-nest.Connect(exc, exc, conn_dict_bern, syn_dict_ee)
+nest.Connect(exc, exc, conn_dict_ee, syn_dict_ee)
 
 filename = "random_exc_test.pdf"
 nodes = [exc]
