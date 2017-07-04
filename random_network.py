@@ -5,12 +5,14 @@ import data_analysis
 import control_flow
 
 # nest.ResetKernel();
+nest.set_verbosity(level="M_QUIET")
+
 msd = np.random.randint(100000)
 N_vp = nest.GetKernelStatus(['total_num_virtual_procs'])[0]
 nest.SetKernelStatus({'grng_seed' : msd+N_vp})
 nest.SetKernelStatus({'rng_seeds' : range(msd+N_vp+1, msd+2*N_vp+1)})
 
-n, T_ms = control_flow.common_args()
+n, T_ms, _ = control_flow.common_args()
 N = n
 p = 0.2
 ndict = {"I_e": 250.0, "tau_m": 20.0}

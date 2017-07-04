@@ -1,10 +1,15 @@
 import nest
 import numpy as np
+import time
 import visualize
 import data_analysis
 import control_flow
 
-n, T_ms = control_flow.common_args()
+tick = time.time()
+
+nest.set_verbosity(level="M_QUIET")
+
+n, T_ms,R = control_flow.common_args()
 P_bar = np.zeros([int(T_ms/2)])
 isi_tot = []
 N = n
@@ -14,7 +19,7 @@ Jee = 20.0
 d = 1.0
 syn_dict_ee = {"delay": d, "weight": Jee}
 
-R = 20 # number of realisations of the random network
+#R = 20 # number of realisations of the random network
 V_mean = np.zeros([R])
 V_var = np.zeros([R])
 start_seed = 100000
@@ -22,6 +27,7 @@ N_vp = nest.GetKernelStatus(['total_num_virtual_procs'])[0]
 
 for i in np.arange(R):
   nest.ResetKernel()
+
   msd = start_seed + i
   # 'resolution' : 0.1
   nest.SetKernelStatus({'grng_seed' : msd+N_vp})
@@ -34,12 +40,6 @@ for i in np.arange(R):
   nest.Connect(exc, exc, conn_dict_ee, syn_dict_ee)
   nest.Connect(multimeter, exc)
   nest.Connect(exc,spikedetector)
-  # uncomment to check a different network is being created each time:
-
-  # filename = "random_exc_test_%s.pdf"%(i)
-  # nodes = [exc]
-  # colors = ["lightpink"]
-  # visualize.plot_network(nodes, colors, filename)
 
   nest.Simulate(T_ms)
   dmm = nest.GetStatus(multimeter)
@@ -54,10 +54,10 @@ for i in np.arange(R):
   isi_plot = [item for sublist in isi for item in sublist]
   isi_tot = isi_tot + isi_plot
 
-import matplotlib.pylab as plt
-print(V_mean)
-print(V_var)
-#plt.hist(np.array(isi_tot))
-#plt.show()
-#plt.plot(freq,P_bar)
-#plt.show()
+name = 'simple_exc'
+data_analysis.voltage_hist_plots(name,V_mean, V_var)
+data_analysis.isi_hist_plot(name,isi_tot)
+data_analysis.psd_mean_plot(name,P_bar,freq)
+
+tock = time.time()
+print("Total elapsed time = %.3fs"%(tock-tick))

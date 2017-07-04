@@ -51,7 +51,6 @@ def isi_extract(dSD,n,plot=False):
       plt.close()
   return isi
 
-
 def spike_plot(dSD):
   evs = dSD["senders"]
   ts_s = dSD["times"]
@@ -61,3 +60,25 @@ def spike_plot(dSD):
     plt.ylabel("Neuron Number")
     pdf.savefig(bbox_inches='tight')
     plt.close()
+
+def voltage_hist_plots(name,V_mean, V_var):
+  with PdfPages('vmean_histogram_%s.pdf'%(name)) as pdf:
+    plt.hist(V_mean)
+    pdf.savefig()
+    plt.close()
+  with PdfPages('vvar_histogram_%s.pdf'%(name)) as pdf:
+    plt.hist(V_var)
+    pdf.savefig()
+    plt.close()
+
+def isi_hist_plot(name,isi):
+  with PdfPages('isi_histogram_%s.pdf'%(name)) as pdf:
+      plt.hist(np.array(isi))
+      pdf.savefig()
+      plt.close()
+
+def psd_mean_plot(name,psd,freq):
+  with PdfPages('psd_mean_%s.pdf'%(name)) as pdf:
+      plt.plot(freq,psd)
+      pdf.savefig()
+      plt.close()
