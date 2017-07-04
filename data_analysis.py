@@ -34,7 +34,7 @@ def voltage_psd(ts_v,Vms,plot=False):
       pdf.savefig()
       plt.close()
 
-  return P
+  return P,freq
 
 def isi_extract(dSD,n,plot=False):
   evs = dSD["senders"]
@@ -42,11 +42,11 @@ def isi_extract(dSD,n,plot=False):
   isi = []
   for i in 1+np.arange(n):
     idx = np.where(evs==i)[0]
-    isi.append(np.diff(ts_s[idx]))
-  isi = np.vstack(isi) # this will break if the neurons don't have the same number of spikes
+    isi.append(list(np.diff(ts_s[idx])))
   if plot == True:
+    isi_plot = [item for sublist in isi for item in sublist]
     with PdfPages('isi_histogram.pdf') as pdf:
-      plt.hist(isi.flatten())
+      plt.hist(np.array(isi_plot))
       pdf.savefig()
       plt.close()
   return isi

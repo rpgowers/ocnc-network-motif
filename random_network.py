@@ -26,7 +26,6 @@ nest.Connect(exc, exc, conn_dict_ee, syn_dict_ee)
 filename = "random_exc_test.pdf"
 nodes = [exc]
 colors = ["lightpink"]
-
 visualize.plot_network(nodes, colors, filename)
 
 multimeter = nest.Create("multimeter", 1)
@@ -47,6 +46,4 @@ dSD = nest.GetStatus(spikedetector,keys="events")[0]
 data_analysis.spike_plot(dSD)
 
 ISI = data_analysis.isi_extract(dSD,n,plot=True)
-print(ISI)
-hist = np.histogram(ISI, bins = 5)
-print(hist)
+print(len(ISI[0]),len(ISI[1]))
