@@ -51,10 +51,10 @@ def isi_extract(dSD,n,plot=False):
       plt.close()
   return isi
 
-def spike_plot(dSD):
+def spike_plot(name,dSD):
   evs = dSD["senders"]
   ts_s = dSD["times"]
-  with PdfPages('raster_plot.pdf') as pdf:
+  with PdfPages('raster_plot_%s.pdf'%(name)) as pdf:
     plt.plot(ts_s,evs,'.')
     plt.xlabel("Time (ms)")
     plt.ylabel("Neuron Number")
@@ -68,6 +68,20 @@ def voltage_hist_plots(name,V_mean, V_var):
     plt.close()
   with PdfPages('vvar_histogram_%s.pdf'%(name)) as pdf:
     plt.hist(V_var)
+    pdf.savefig()
+    plt.close()
+
+def voltage_time_plots(name,Vpop_mean,Vpop_var,ts_v): # here V_pop is the population mean
+  with PdfPages('vpop_mean_time_%s.pdf'%(name)) as pdf:
+    plt.plot(ts_v,Vpop_mean)
+    plt.xlabel('Time(ms)')
+    plt.ylabel('Population Voltage Mean (mV)')
+    pdf.savefig()
+    plt.close()
+  with PdfPages('vpop_var_time_%s.pdf'%(name)) as pdf:
+    plt.plot(ts_v,Vpop_var)
+    plt.xlabel('Time(ms)')
+    plt.ylabel('Population Voltage Variance (mV^2)')
     pdf.savefig()
     plt.close()
 

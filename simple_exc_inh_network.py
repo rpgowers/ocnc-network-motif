@@ -35,6 +35,10 @@ syn_dict_ie = {"delay": d, "weight": Jie}
 
 P_bar_exc = np.zeros([int(T_ms/2)])
 P_bar_inh = np.zeros([int(T_ms/2)])
+Vpop_mean_bar_exc = np.zeros([int(T_ms)-1])
+Vpop_var_bar_exc = np.zeros([int(T_ms)-1])
+Vpop_mean_bar_inh = np.zeros([int(T_ms)-1])
+Vpop_var_bar_inh = np.zeros([int(T_ms)-1])
 V_mean_exc = np.zeros([R])
 V_mean_inh = np.zeros([R])
 V_var_exc = np.zeros([R])
@@ -84,15 +88,24 @@ for i in np.arange(R):
   V_mean_inh[i] = np.mean(Vms_inh) # mean across all neurons for all time
   V_var_exc[i] = np.var(Vms_exc) # variance across all neurons for all time
   V_var_inh[i] = np.var(Vms_inh) # variance across all neurons for all time
-
+  Vpop_mean_exc = np.mean(Vms_exc,axis=0) # population mean of excitatory neurons
+  Vpop_var_exc = np.var(Vms_exc,axis=0) # population variance of excitatory neurons
+  Vpop_mean_inh = np.mean(Vms_inh,axis=0) # population mean of excitatory neurons
+  Vpop_var_inh = np.var(Vms_inh,axis=0) # population variance of excitatory neurons
+  Vpop_mean_bar_exc += Vpop_mean_exc/R
+  Vpop_var_bar_exc += Vpop_var_exc/R
+  Vpop_mean_bar_inh += Vpop_mean_inh/R
+  Vpop_var_bar_inh += Vpop_var_inh/R
 
 name = 'simple_exc_inh_epop'
 data_analysis.psd_mean_plot(name,P_bar_exc,freq)
 data_analysis.voltage_hist_plots(name,V_mean_exc, V_var_exc)
+data_analysis.voltage_time_plots(name,Vpop_mean_bar_exc,Vpop_var_bar_exc,ts_v)
 
 name = 'simple_exc_inh_ipop'
 data_analysis.psd_mean_plot(name,P_bar_inh,freq)
 data_analysis.voltage_hist_plots(name,V_mean_inh, V_var_inh)
+data_analysis.voltage_time_plots(name,Vpop_mean_bar_inh,Vpop_var_bar_inh,ts_v)
 
 tock = time.time()
 print("Total elapsed time = %.3fs"%(tock-tick))

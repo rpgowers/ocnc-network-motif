@@ -22,7 +22,6 @@ nest.SetStatus(multimeter, {"withtime":True, "record_from":["V_m"]})
 nest.Connect(current_noise,exc)
 nest.Connect(multimeter,exc)
 
-#T_ms = 300.0
 nest.Simulate(T_ms)
 
 dmm = nest.GetStatus(multimeter)

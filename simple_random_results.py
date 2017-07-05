@@ -11,11 +11,14 @@ nest.set_verbosity(level="M_QUIET")
 
 n, T_ms,R = control_flow.common_args()
 P_bar = np.zeros([int(T_ms/2)])
+Vpop_mean_bar = np.zeros([int(T_ms)-1])
+Vpop_var_bar = np.zeros([int(T_ms)-1])
+
 isi_tot = []
 N = n
-ndict = {"I_e": 250.0, "tau_m": 20.0}
+ndict = {"I_e": 200.0, "tau_m": 20.0}
 conn_dict_ee = {'rule': 'fixed_total_number', 'N': N, "autapses" : False}
-Jee = 20.0
+Jee = 80.0
 d = 1.0
 syn_dict_ee = {"delay": d, "weight": Jee}
 
@@ -47,7 +50,12 @@ for i in np.arange(R):
   PSD,freq = data_analysis.voltage_psd(ts_v,Vms,plot=False)
   V_mean[i] = np.mean(Vms) # mean across all neurons for all time
   V_var[i] = np.var(Vms) # variance across all neurons for all time
-  P = np.mean(PSD,axis=0)
+  Vpop_mean = np.mean(Vms,axis=0)
+  Vpop_var = np.var(Vms,axis=0)
+
+  Vpop_mean_bar += Vpop_mean/R
+  Vpop_var_bar += Vpop_var/R
+  P = np.mean(PSD,axis=0) # PSD mean across neurons
   P_bar += P/R
   dSD = nest.GetStatus(spikedetector,keys="events")[0]
   isi = data_analysis.isi_extract(dSD,n,plot=False)
@@ -58,6 +66,8 @@ name = 'simple_exc'
 data_analysis.voltage_hist_plots(name,V_mean, V_var)
 data_analysis.isi_hist_plot(name,isi_tot)
 data_analysis.psd_mean_plot(name,P_bar,freq)
+data_analysis.spike_plot(name,dSD)
+data_analysis.voltage_time_plots(name,Vpop_mean_bar,Vpop_var_bar,ts_v)
 
 tock = time.time()
 print("Total elapsed time = %.3fs"%(tock-tick))
