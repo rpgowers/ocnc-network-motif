@@ -43,7 +43,7 @@ def plot_network(nodes, colors, filename, ext_conns=False,
         else:
             return "%i" % node
 
-    graph = pydot.Dot(rankdir='LR', ranksep='5')
+    graph = pydot.Dot(rankdir='LR', ranksep='1',fontname='Calibri')
 
     def add_nodes(node_list, name, color):
         """

@@ -5,6 +5,8 @@ import visualize
 import data_analysis
 import control_flow
 
+nest.sli_run("M_ALL setverbosity")
+
 tick = time.time()
 
 n, T_ms, R = control_flow.common_args() # here n is the number of excitatory neurons
@@ -48,13 +50,13 @@ start_seed = 100000
 N_vp = nest.GetKernelStatus(['total_num_virtual_procs'])[0]
 
 for i in np.arange(R):
-  nest.ResetKernel()
+  #nest.ResetKernel()
   msd = start_seed + i
   nest.SetKernelStatus({'grng_seed' : msd+N_vp})
   nest.SetKernelStatus({'rng_seeds' : range(msd+N_vp+1, msd+2*N_vp+1)})
 
   exc = nest.Create("iaf_psc_alpha",n,params=exc_dict)
-  inh = nest.Create("iaf_psc_alpha",m,params=exc_dict)
+  inh = nest.Create("iaf_psc_alpha",m,params=inh_dict)
   multimeter_exc = nest.Create("multimeter", 1)
   multimeter_inh = nest.Create("multimeter", 1)
   nest.SetStatus(multimeter_exc, {"withtime":True, "record_from":["V_m"]})
