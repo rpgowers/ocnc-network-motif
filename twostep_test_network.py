@@ -17,13 +17,18 @@ N_vp = nest.GetKernelStatus(['total_num_virtual_procs'])[0]
 
 for i in np.arange(R):
   nest.ResetKernel()
-  nest.SetKernelStatus({'dict_miss_is_error' : False})
+  #nest.SetKernelStatus({'dict_miss_is_error' : False})
   msd = start_seed + i
   nest.SetKernelStatus({'grng_seed' : msd+N_vp})
   nest.SetKernelStatus({'rng_seeds' : range(msd+N_vp+1, msd+2*N_vp+1)})
   exc = nest.Create("iaf_psc_alpha",n)
 
   nest.Connect(exc, exc, conn_dict_ee)
+
+  filename = "twostep_test_before.pdf"
+  nodes = [exc]
+  colors = ["lightpink","powderblue"]
+  visualize.plot_network(nodes, colors, filename)
 
   raw_connect = nest.GetConnections(exc)
   l = len(raw_connect)
@@ -32,14 +37,11 @@ for i in np.arange(R):
   for i in np.arange(l):
   	set_connect[i] = [raw_connect[i][0],raw_connect[i][1]]
   	flip_connect[i] = [raw_connect[i][1],raw_connect[i][0]]
-  conn_spec = {'rule':'pairwise_bernoulli','p':1.0}
+  conn_spec = {'rule':'pairwise_bernoulli','p':0.8}
   syn_spec = {"delay": 1.0, "weight": 150.0}
   for i in np.arange(l):
   	if flip_connect[i] not in set_connect:
-  	  #nest.Connect(5,2,{'rule':'one_to_one'})
-  	  nest.Connect(exc[flip_connect[i][0]-1],exc[flip_connect[i][1]-1],conn_spec)#,syn_spec)
+  	  nest.Connect([exc[flip_connect[i][0]-1]],[exc[flip_connect[i][1]-1]],conn_spec,syn_spec)
 
-  filename = "twostep_test.pdf"
-  nodes = [exc]
-  colors = ["lightpink","powderblue"]
+  filename = "twostep_test_after.pdf"
   visualize.plot_network(nodes, colors, filename)
