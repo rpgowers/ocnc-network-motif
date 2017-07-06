@@ -36,6 +36,23 @@ def voltage_psd(ts_v,Vms,plot=False):
 
   return P,freq
 
+def mean_voltage_psd(ts_v,Vms,plot=False):
+  timestep = (ts_v[1]-ts_v[0])/1000
+  N = len(ts_v)
+  freq = np.fft.rfftfreq(len(ts_v), d=timestep)
+  P = np.zeros([len(freq)])
+  F = np.fft.rfft(Vms-np.mean(Vms))*timestep
+  P = abs(F)**2
+  if plot == True:
+    with PdfPages('voltage_psd_plot.pdf') as pdf:
+      plt.xlabel('Frequency (Hz)')
+      plt.ylabel('Power Spectral Density ($\mu$V/Hz)')
+      plt.plot(freq,P.T)
+      pdf.savefig()
+      plt.close()
+
+  return P,freq
+
 def isi_extract(dSD,n,plot=False):
   evs = dSD["senders"]
   ts_s = dSD["times"]
