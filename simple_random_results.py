@@ -7,8 +7,6 @@ import control_flow
 
 tick = time.time()
 
-nest.set_verbosity(level="M_QUIET")
-
 n, T_ms,R = control_flow.common_args()
 P_bar = np.zeros([int(T_ms/2)])
 Vpop_mean_bar = np.zeros([int(T_ms)-1])

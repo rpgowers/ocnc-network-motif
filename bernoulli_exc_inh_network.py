@@ -83,22 +83,22 @@ for i in np.arange(R):
   Vpop_mean_inh = np.mean(Vms_inh,axis=0) # population mean of excitatory neurons
   Vpop_var_inh = np.var(Vms_inh,axis=0) # population variance of excitatory neurons
 
-  PSD_exc,freq = data_analysis.voltage_psd(ts_v,Vms_exc,plot=False)
-  PSD_inh,freq = data_analysis.voltage_psd(ts_v,Vms_inh,plot=False)
-  P_exc = np.mean(PSD_exc,axis=0)
-  P_inh = np.mean(PSD_inh,axis=0)
+  #PSD_exc,freq = data_analysis.voltage_psd(ts_v,Vms_exc,plot=False)
+  #PSD_inh,freq = data_analysis.voltage_psd(ts_v,Vms_inh,plot=False)
+  #P_exc = np.mean(PSD_exc,axis=0)
+  #P_inh = np.mean(PSD_inh,axis=0)
 
   P_mean_exc, freq = data_analysis.mean_voltage_psd(ts_v,Vpop_mean_exc,plot=False)
   P_mean_inh, freq = data_analysis.mean_voltage_psd(ts_v,Vpop_mean_inh,plot=False)
 
 name = 'bernoulli_epop'
-data_analysis.psd_mean_plot(name,P_exc,freq)
+#data_analysis.psd_mean_plot(name,P_exc,freq)
 data_analysis.voltage_time_plots(name,Vpop_mean_exc,Vpop_var_exc,ts_v)
-name = 'test_bernoulli_epop'
+#name = 'test_bernoulli_epop'
 data_analysis.psd_mean_plot(name,P_mean_exc,freq)
 
 name = 'bernoulli_ipop'
-data_analysis.psd_mean_plot(name,P_inh,freq)
+#data_analysis.psd_mean_plot(name,P_inh,freq)
 data_analysis.voltage_time_plots(name,Vpop_mean_inh,Vpop_var_inh,ts_v)
-name = 'test_bernoulli_ipop'
+#name = 'test_bernoulli_ipop'
 data_analysis.psd_mean_plot(name,P_mean_inh,freq)

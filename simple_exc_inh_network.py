@@ -5,7 +5,7 @@ import visualize
 import data_analysis
 import control_flow
 
-nest.sli_run("M_ALL setverbosity")
+nest.sli_run("M_WARNING setverbosity")
 
 tick = time.time()
 
@@ -50,7 +50,7 @@ start_seed = 100000
 N_vp = nest.GetKernelStatus(['total_num_virtual_procs'])[0]
 
 for i in np.arange(R):
-  #nest.ResetKernel()
+  nest.ResetKernel()
   msd = start_seed + i
   nest.SetKernelStatus({'grng_seed' : msd+N_vp})
   nest.SetKernelStatus({'rng_seeds' : range(msd+N_vp+1, msd+2*N_vp+1)})
@@ -68,11 +68,6 @@ for i in np.arange(R):
   nest.Connect(inh, exc, conn_dict_ie, syn_dict_ie)
   nest.Connect(multimeter_exc, exc)
   nest.Connect(multimeter_inh, inh)
-
-  # filename = "random_exc_inh_test.pdf"
-  # nodes = [exc,inh]
-  # colors = ["lightpink","powderblue"]
-  # visualize.plot_network(nodes, colors, filename)
 
   nest.Simulate(T_ms)
   dmm_exc = nest.GetStatus(multimeter_exc)

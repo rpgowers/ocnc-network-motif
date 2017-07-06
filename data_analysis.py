@@ -113,3 +113,15 @@ def psd_mean_plot(name,psd,freq):
       plt.plot(freq,psd)
       pdf.savefig()
       plt.close()
+
+def spike_psd_plot(name,t,S):
+  timestep = (t[1]-t[0])/1000
+  N = len(t)
+  freq = np.fft.rfftfreq(len(t), d=timestep)
+  P = np.zeros([len(freq)])
+  F = np.fft.rfft(S)*timestep
+  P = abs(F)**2
+  with PdfPages('spike_psd_%s.pdf'%(name)) as pdf:
+    plt.plot(freq,P)
+    pdf.savefig()
+    plt.close()
