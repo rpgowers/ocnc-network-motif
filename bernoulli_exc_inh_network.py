@@ -4,7 +4,6 @@ import time
 import visualize
 import data_analysis
 import control_flow
-
 nest.sli_run("M_WARNING setverbosity")
 
 tick = time.time()
@@ -36,6 +35,11 @@ syn_dict_ii = {"delay": d, "weight": Jii}
 syn_dict_ei = {"delay": d, "weight": Jei}
 syn_dict_ie = {"delay": d, "weight": Jie}
 
+bin_step = 1
+time_bins = np.arange(0,T_ms+bin_step,bin_step)
+f_exc = np.zeros([int(T_ms/bin_step)],dtype = int)
+f_inh = np.zeros([int(T_ms/bin_step)], dtype = int)
+
 poisson_dict = {'rate' : 50.0, 'origin' : 0.0}
 conn_dict_poisson = {'rule': 'all_to_all'}
 syn_dict_poisson = {"delay": 1.0, "weight": 150.0}
@@ -57,20 +61,24 @@ for i in np.arange(R):
   nest.Connect(exc, inh, conn_dict_ei, syn_dict_ei)
   nest.Connect(inh, exc, conn_dict_ie, syn_dict_ie)
   poisson_noise = nest.Create("poisson_generator", n=1, params=poisson_dict)
-  multimeter_exc = nest.Create("multimeter", n=1)
-  multimeter_inh = nest.Create("multimeter", n=1)
-  nest.SetStatus(multimeter_exc, {"withtime":True, "record_from":["V_m"]})
-  nest.SetStatus(multimeter_inh, {"withtime":True, "record_from":["V_m"]})
+  multimeter_exc = nest.Create("multimeter", n=1, params={"withtime":True, "record_from":["V_m"]})
+  multimeter_inh = nest.Create("multimeter", n=1, params={"withtime":True, "record_from":["V_m"]})
+  spikedetector_exc = nest.Create("spike_detector", params={"withgid": True, "withtime": True})
+  spikedetector_inh = nest.Create("spike_detector", params={"withgid": True, "withtime": True})
+  #nest.SetStatus(multimeter_exc, {"withtime":True, "record_from":["V_m"]})
+  #nest.SetStatus(multimeter_inh, {"withtime":True, "record_from":["V_m"]})
 
-  filename = "bernoulli_exc_inh_test.pdf"
-  nodes = [exc,inh]
-  colors = ["lightpink","powderblue"]
-  visualize.plot_network(nodes, colors, filename)
+  #filename = "bernoulli_exc_inh_test.pdf"
+  #nodes = [exc,inh]
+  #colors = ["lightpink","powderblue"]
+  #visualize.plot_network(nodes, colors, filename)
 
   nest.Connect(poisson_noise,exc,conn_dict_poisson,syn_dict_poisson)
   nest.Connect(poisson_noise,inh,conn_dict_poisson,syn_dict_poisson)
   nest.Connect(multimeter_exc,exc)
   nest.Connect(multimeter_inh,inh)
+  nest.Connect(exc,spikedetector_exc)
+  nest.Connect(inh,spikedetector_inh)
 
   nest.Simulate(T_ms)
   dmm_exc = nest.GetStatus(multimeter_exc)
@@ -83,22 +91,25 @@ for i in np.arange(R):
   Vpop_mean_inh = np.mean(Vms_inh,axis=0) # population mean of excitatory neurons
   Vpop_var_inh = np.var(Vms_inh,axis=0) # population variance of excitatory neurons
 
-  #PSD_exc,freq = data_analysis.voltage_psd(ts_v,Vms_exc,plot=False)
-  #PSD_inh,freq = data_analysis.voltage_psd(ts_v,Vms_inh,plot=False)
-  #P_exc = np.mean(PSD_exc,axis=0)
-  #P_inh = np.mean(PSD_inh,axis=0)
-
   P_mean_exc, freq = data_analysis.mean_voltage_psd(ts_v,Vpop_mean_exc,plot=False)
   P_mean_inh, freq = data_analysis.mean_voltage_psd(ts_v,Vpop_mean_inh,plot=False)
 
+  dSD_exc = nest.GetStatus(spikedetector_exc,keys="events")[0]
+  ts_s_exc = dSD_exc["times"]
+  f_exc += np.histogram(ts_s_exc,bins=time_bins)[0]
+  dSD_inh = nest.GetStatus(spikedetector_inh,keys="events")[0]
+  ts_s_inh = dSD_inh["times"]
+  f_inh += np.histogram(ts_s_inh,bins=time_bins)[0]
+
 name = 'bernoulli_epop'
-#data_analysis.psd_mean_plot(name,P_exc,freq)
 data_analysis.voltage_time_plots(name,Vpop_mean_exc,Vpop_var_exc,ts_v)
-#name = 'test_bernoulli_epop'
 data_analysis.psd_mean_plot(name,P_mean_exc,freq)
+data_analysis.spike_psd_plot(name,time_bins[1:],f_exc)
 
 name = 'bernoulli_ipop'
-#data_analysis.psd_mean_plot(name,P_inh,freq)
 data_analysis.voltage_time_plots(name,Vpop_mean_inh,Vpop_var_inh,ts_v)
-#name = 'test_bernoulli_ipop'
 data_analysis.psd_mean_plot(name,P_mean_inh,freq)
+data_analysis.spike_psd_plot(name,time_bins[1:],f_inh)
+
+tock = time.time()
+print(tock-tick)

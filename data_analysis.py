@@ -119,9 +119,11 @@ def spike_psd_plot(name,t,S):
   N = len(t)
   freq = np.fft.rfftfreq(len(t), d=timestep)
   P = np.zeros([len(freq)])
-  F = np.fft.rfft(S)*timestep
+  F = np.fft.rfft(S-np.mean(S))*timestep
   P = abs(F)**2
   with PdfPages('spike_psd_%s.pdf'%(name)) as pdf:
     plt.plot(freq,P)
+    #plt.xlim([0,20])
+    #plt.ylim([0,1])
     pdf.savefig()
     plt.close()

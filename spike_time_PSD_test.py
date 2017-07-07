@@ -42,6 +42,3 @@ for i in np.arange(R):
 name = 'spike_PSD_test'
 data_analysis.spike_plot(name,dSD)
 data_analysis.spike_psd_plot(name,time_bins[1:],f)
-import matplotlib.pylab as plt
-plt.plot(time_bins[1:],f)
-plt.show()
