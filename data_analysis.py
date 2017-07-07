@@ -53,6 +53,15 @@ def mean_voltage_psd(ts_v,Vms,plot=False):
 
   return P,freq
 
+def st_extract(dSD,n):
+  evs = dSD["senders"]
+  ts_s = dSD["times"]
+  st = []
+  for i in 1+np.arange(n):
+    idx = np.where(evs==i)[0]
+    st.append(list(ts_s[idx]))
+  return st
+
 def isi_extract(dSD,n,plot=False):
   evs = dSD["senders"]
   ts_s = dSD["times"]
@@ -127,3 +136,13 @@ def spike_psd_plot(name,t,S):
     #plt.ylim([0,1])
     pdf.savefig()
     plt.close()
+
+def pair_correlate(ind_st,time_bins):
+  n = len(ind_st)
+  hist_array = np.zeros([n,len(time_bins)-1])
+  for i in np.arange(n):
+    hist_array[i] = np.histogram(ind_st[i],bins=time_bins)[0]
+        
+  coeff_matrix = np.corrcoef(hist_array)
+  coeff_vector = coeff_matrix[np.tri(np.shape(coeff_matrix)[0],k=-1,dtype=bool)]
+  return hist_array, coeff_vector

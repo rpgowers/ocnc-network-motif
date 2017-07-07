@@ -11,8 +11,8 @@ tick = time.time()
 n, T_ms, R = control_flow.common_args()
 m = int(n/4)
 
-exc_dict = {"I_e": 100.0, "tau_m": 20.0}
-inh_dict = {"I_e": 100.0, "tau_m": 20.0}
+exc_dict = {"I_e": 150.0, "tau_m": 20.0}
+inh_dict = {"I_e": 150.0, "tau_m": 20.0}
 
 p_ee = 0.1
 p_ii = 0.1
@@ -25,10 +25,10 @@ conn_dict_ei = {'rule': 'pairwise_bernoulli', 'p': p_ei, "autapses" : False}
 conn_dict_ie = {'rule': 'pairwise_bernoulli', 'p': p_ie, "autapses" : False}
 
 d = 1.0
-Jee = 100
-Jii = -100
-Jei = 100
-Jie = -100
+Jee = 65
+Jii = -65
+Jei = 65
+Jie = -65
 
 syn_dict_ee = {"delay": d, "weight": Jee}
 syn_dict_ii = {"delay": d, "weight": Jii}
@@ -40,9 +40,12 @@ time_bins = np.arange(0,T_ms+bin_step,bin_step)
 f_exc = np.zeros([int(T_ms/bin_step)],dtype = int)
 f_inh = np.zeros([int(T_ms/bin_step)], dtype = int)
 
-poisson_dict = {'rate' : 50.0, 'origin' : 0.0}
+big_bin = 10 # time bins used for pairwise comparisons
+time_bins_big = np.arange(0,Tms+big_bin,big_bin)
+
+poisson_dict = {'rate' : 20.0, 'origin' : 0.0}
 conn_dict_poisson = {'rule': 'all_to_all'}
-syn_dict_poisson = {"delay": 1.0, "weight": 150.0}
+syn_dict_poisson = {"delay": 1.0, "weight": 65.0}
 
 start_seed = 100002
 N_vp = nest.GetKernelStatus(['total_num_virtual_procs'])[0]
@@ -65,8 +68,6 @@ for i in np.arange(R):
   multimeter_inh = nest.Create("multimeter", n=1, params={"withtime":True, "record_from":["V_m"]})
   spikedetector_exc = nest.Create("spike_detector", params={"withgid": True, "withtime": True})
   spikedetector_inh = nest.Create("spike_detector", params={"withgid": True, "withtime": True})
-  #nest.SetStatus(multimeter_exc, {"withtime":True, "record_from":["V_m"]})
-  #nest.SetStatus(multimeter_inh, {"withtime":True, "record_from":["V_m"]})
 
   #filename = "bernoulli_exc_inh_test.pdf"
   #nodes = [exc,inh]
