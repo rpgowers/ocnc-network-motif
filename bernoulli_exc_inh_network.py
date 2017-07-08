@@ -15,7 +15,7 @@ exc_dict = {"I_e": 150.0, "tau_m": 20.0}
 inh_dict = {"I_e": 150.0, "tau_m": 20.0}
 
 p_ee = 0.1
-p_ii = 0.1
+p_ii = 0.4
 p_ei = 0.1
 p_ie = 0.4
 
@@ -41,7 +41,9 @@ f_exc = np.zeros([int(T_ms/bin_step)],dtype = int)
 f_inh = np.zeros([int(T_ms/bin_step)], dtype = int)
 
 big_bin = 10 # time bins used for pairwise comparisons
-time_bins_big = np.arange(0,Tms+big_bin,big_bin)
+time_bins_big = np.arange(0,T_ms+big_bin,big_bin)
+exc_coeff_all = []
+inh_coeff_all = []
 
 poisson_dict = {'rate' : 20.0, 'origin' : 0.0}
 conn_dict_poisson = {'rule': 'all_to_all'}
@@ -49,6 +51,9 @@ syn_dict_poisson = {"delay": 1.0, "weight": 65.0}
 
 start_seed = 100002
 N_vp = nest.GetKernelStatus(['total_num_virtual_procs'])[0]
+
+raw_spikes_exc = 0 # number of total excitatory spikes
+raw_spikes_inh = 0 # number of total inhibitory spikes
 
 for i in np.arange(R):
   nest.ResetKernel()
@@ -102,15 +107,32 @@ for i in np.arange(R):
   ts_s_inh = dSD_inh["times"]
   f_inh += np.histogram(ts_s_inh,bins=time_bins)[0]
 
+  raw_spikes_exc += len(ts_s_exc)
+  raw_spikes_inh += len(ts_s_inh)
+
+  exc_st = data_analysis.st_extract(dSD_exc,n)
+  inh_st = data_analysis.st_extract(dSD_inh,m)
+  _, exc_coeff = data_analysis.pair_correlate(exc_st,time_bins_big)
+  _, inh_coeff = data_analysis.pair_correlate(inh_st,time_bins_big)
+  exc_coeff_all += list(exc_coeff)
+  inh_coeff_all += list(inh_coeff)
+
+
+print(raw_spikes_exc/(n*R*T_ms/1000))
+print(raw_spikes_inh/(m*R*T_ms/1000))
+
 name = 'bernoulli_epop'
 data_analysis.voltage_time_plots(name,Vpop_mean_exc,Vpop_var_exc,ts_v)
 data_analysis.psd_mean_plot(name,P_mean_exc,freq)
 data_analysis.spike_psd_plot(name,time_bins[1:],f_exc)
+#print(exc_coeff_all)
+data_analysis.coefficient_histogram(name,exc_coeff_all)
 
 name = 'bernoulli_ipop'
 data_analysis.voltage_time_plots(name,Vpop_mean_inh,Vpop_var_inh,ts_v)
 data_analysis.psd_mean_plot(name,P_mean_inh,freq)
 data_analysis.spike_psd_plot(name,time_bins[1:],f_inh)
+data_analysis.coefficient_histogram(name,inh_coeff_all)
 
 tock = time.time()
 print(tock-tick)

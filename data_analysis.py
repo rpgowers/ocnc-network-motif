@@ -144,5 +144,13 @@ def pair_correlate(ind_st,time_bins):
     hist_array[i] = np.histogram(ind_st[i],bins=time_bins)[0]
         
   coeff_matrix = np.corrcoef(hist_array)
-  coeff_vector = coeff_matrix[np.tri(np.shape(coeff_matrix)[0],k=-1,dtype=bool)]
+  coeff_vector = np.nan_to_num(coeff_matrix[np.tri(np.shape(coeff_matrix)[0],k=-1,dtype=bool)])
   return hist_array, coeff_vector
+
+def coefficient_histogram(name,coeff_vector):
+  with PdfPages('coeff_hist_%s.pdf'%(name)) as pdf:
+    plt.hist(coeff_vector)
+    plt.xlabel('Correlation coefficient')
+    plt.ylabel('Number of occurrences')
+    pdf.savefig()
+    plt.close()
