@@ -101,10 +101,11 @@ for i in np.arange(R):
   dSD_exc = nest.GetStatus(spikedetector_exc,keys="events")[0]
   ts_s_exc = dSD_exc["times"]
   f_exc += np.histogram(ts_s_exc,bins=time_bins)[0]
-
   dSD_inh = nest.GetStatus(spikedetector_inh,keys="events")[0]
   ts_s_inh = dSD_inh["times"]
   f_inh += np.histogram(ts_s_inh,bins=time_bins)[0]
+  raw_spikes_exc += len(ts_s_exc)
+  raw_spikes_inh += len(ts_s_inh)
 
   exc_st = data_analysis.st_extract(dSD_exc,n)
   inh_st = data_analysis.st_extract(dSD_inh,m)
@@ -133,3 +134,6 @@ np.savetxt('%s_all_inh_spikes.txt'%(name),data)
 # neuron firing correlation coefficients
 np.savetxt('%s_epop_spike_correlations.txt'%(name),exc_coeff_all)
 np.savetxt('%s_ipop_spike_correlations.txt'%(name),inh_coeff_all)
+
+tock = time.time()
+print(tock-tick)
