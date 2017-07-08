@@ -74,11 +74,6 @@ for i in np.arange(R):
   spikedetector_exc = nest.Create("spike_detector", params={"withgid": True, "withtime": True})
   spikedetector_inh = nest.Create("spike_detector", params={"withgid": True, "withtime": True})
 
-  #filename = "bernoulli_exc_inh_test.pdf"
-  #nodes = [exc,inh]
-  #colors = ["lightpink","powderblue"]
-  #visualize.plot_network(nodes, colors, filename)
-
   nest.Connect(poisson_noise,exc,conn_dict_poisson,syn_dict_poisson)
   nest.Connect(poisson_noise,inh,conn_dict_poisson,syn_dict_poisson)
   nest.Connect(multimeter_exc,exc)
@@ -125,7 +120,6 @@ name = 'bernoulli_epop'
 data_analysis.voltage_time_plots(name,Vpop_mean_exc,Vpop_var_exc,ts_v)
 data_analysis.psd_mean_plot(name,P_mean_exc,freq)
 data_analysis.spike_psd_plot(name,time_bins[1:],f_exc)
-#print(exc_coeff_all)
 data_analysis.coefficient_histogram(name,exc_coeff_all)
 
 name = 'bernoulli_ipop'
