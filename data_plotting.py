@@ -1,5 +1,8 @@
 import numpy as np
 import data_analysis
+import time
+
+tick = time.time()
 
 name = 'bernoulli_ei' # change later for generality
 
@@ -20,3 +23,6 @@ data = np.loadtxt('%s_epop_spike_correlations.txt'%(name))
 data_analysis.coefficient_histogram('%s_epop'%(name),data)
 data = np.loadtxt('%s_ipop_spike_correlations.txt'%(name))
 data_analysis.coefficient_histogram('%s_ipop'%(name),data)
+
+tock = time.time()
+print(tock-tick)
