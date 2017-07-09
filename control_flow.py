@@ -24,5 +24,5 @@ def twostep_connect(net,p):
   conn_spec = {'rule':'pairwise_bernoulli','p':p}
   syn_spec = {"delay": 1.0, "weight": 150.0}
   for i in np.arange(l):
-  	if flip_connect[i] not in set_connect:
+  	if any((set_connect[:]==flip_connect[i]).all(1))==False:
   	  nest.Connect([net[flip_connect[i][0]-1]],[net[flip_connect[i][1]-1]],conn_spec,syn_spec)
