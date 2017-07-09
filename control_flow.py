@@ -19,10 +19,13 @@ def twostep_connect(net,p):
   set_connect = np.zeros([l,2],dtype = int)
   flip_connect = np.zeros([l,2],dtype = int)
   for i in np.arange(l):
-  	set_connect[i] = [raw_connect[i][0],raw_connect[i][1]]
-  	flip_connect[i] = [raw_connect[i][1],raw_connect[i][0]]
+    set_connect[i] = [raw_connect[i][0],raw_connect[i][1]]
+    flip_connect[i] = [raw_connect[i][1],raw_connect[i][0]]
   conn_spec = {'rule':'pairwise_bernoulli','p':p}
   syn_spec = {"delay": 1.0, "weight": 150.0}
   for i in np.arange(l):
-  	if any((set_connect[:]==flip_connect[i]).all(1))==False:
-  	  nest.Connect([net[flip_connect[i][0]-1]],[net[flip_connect[i][1]-1]],conn_spec,syn_spec)
+    if any((set_connect[:]==flip_connect[i]).all(1))==False:
+      #print(net[flip_connect[i][0]-1],net[flip_connect[i][1]-1])
+      #print(flip_connect[i][0],flip_connect[i][1])
+      nest.Connect([flip_connect[i][0]],[flip_connect[i][1]],conn_spec,syn_spec)
+      #nest.Connect([net[flip_connect[i][0]-1]],[net[flip_connect[i][1]-1]],conn_spec,syn_spec)

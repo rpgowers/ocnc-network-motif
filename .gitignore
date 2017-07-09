@@ -2,4 +2,7 @@
 *.png
 *.pyc
 *.txt
+*.npy
 __pycache__/
+raw_data/
+plots/

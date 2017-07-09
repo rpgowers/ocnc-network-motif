@@ -8,6 +8,9 @@ nest.sli_run("M_WARNING setverbosity")
 
 tick = time.time()
 
+name = 'bernoulli_ei'
+data_dir = 'raw_data'
+
 n, T_ms, R = control_flow.common_args()
 m = int(n/4)
 
@@ -43,16 +46,6 @@ Vpop_mean_exc = np.zeros([int(T_ms)-1])
 Vpop_var_exc = np.zeros([int(T_ms)-1])
 Vpop_mean_inh = np.zeros([int(T_ms)-1])
 Vpop_var_inh = np.zeros([int(T_ms)-1])
-
-bin_step = 1
-time_bins = np.arange(0,T_ms+bin_step,bin_step)
-f_exc = np.zeros([int(T_ms/bin_step)],dtype = int)
-f_inh = np.zeros([int(T_ms/bin_step)], dtype = int)
-
-big_bin = 10 # time bins used for pairwise comparisons
-time_bins_big = np.arange(0,T_ms+big_bin,big_bin)
-exc_coeff_all = []
-inh_coeff_all = []
 
 raw_spikes_exc = 0 # number of total excitatory spikes
 raw_spikes_inh = 0 # number of total inhibitory spikes
@@ -100,40 +93,24 @@ for i in np.arange(R):
 
   dSD_exc = nest.GetStatus(spikedetector_exc,keys="events")[0]
   ts_s_exc = dSD_exc["times"]
-  f_exc += np.histogram(ts_s_exc,bins=time_bins)[0]
+  send_exc = dSD_exc["senders"]
   dSD_inh = nest.GetStatus(spikedetector_inh,keys="events")[0]
   ts_s_inh = dSD_inh["times"]
-  f_inh += np.histogram(ts_s_inh,bins=time_bins)[0]
+  send_inh = dSD_inh["senders"]
   raw_spikes_exc += len(ts_s_exc)
   raw_spikes_inh += len(ts_s_inh)
-
-  exc_st = data_analysis.st_extract(dSD_exc,n)
-  inh_st = data_analysis.st_extract(dSD_inh,m)
-  _, exc_coeff = data_analysis.pair_correlate(exc_st,time_bins_big)
-  _, inh_coeff = data_analysis.pair_correlate(inh_st,time_bins_big)
-  exc_coeff_all += list(exc_coeff)
-  inh_coeff_all += list(inh_coeff)
+  # save spikes
+  np.save('%s/%s_raw_exc_spikes_R=%s'%(data_dir,name,i),np.array([ts_s_exc,send_exc]).T)
+  np.save('%s/%s_raw_inh_spikes_R=%s'%(data_dir,name,i),np.array([ts_s_inh,send_inh]).T)
 
 print(raw_spikes_exc/(n*R*T_ms/1000))
 print(raw_spikes_inh/(m*R*T_ms/1000))
 
-name = 'bernoulli_ei'
-
 # voltage mean and variance with time
 data = np.array([ts_v,Vpop_mean_exc,Vpop_var_exc]).T
-np.savetxt('%s_vmom_epop.txt'%(name),data)
+np.savetxt('%s/%s_vmom_epop.txt'%(data_dir,name),data)
 data = np.array([ts_v,Vpop_mean_inh,Vpop_var_inh]).T
-np.savetxt('%s_vmom_ipop.txt'%(name),data)
-
-# total number of spikes with time
-data = np.array([time_bins[1:],f_exc]).T
-np.savetxt('%s_all_exc_spikes.txt'%(name),data)
-data = np.array([time_bins[1:],f_exc]).T
-np.savetxt('%s_all_inh_spikes.txt'%(name),data)
-
-# neuron firing correlation coefficients
-np.savetxt('%s_epop_spike_correlations.txt'%(name),exc_coeff_all)
-np.savetxt('%s_ipop_spike_correlations.txt'%(name),inh_coeff_all)
+np.savetxt('%s/%s_vmom_ipop.txt'%(data_dir,name),data)
 
 tock = time.time()
 print(tock-tick)

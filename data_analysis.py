@@ -53,11 +53,9 @@ def mean_voltage_psd(ts_v,Vms,plot=False):
 
   return P,freq
 
-def st_extract(dSD,n):
-  evs = dSD["senders"]
-  ts_s = dSD["times"]
+def st_extract(evs,ts_s,n,b):
   st = []
-  for i in 1+np.arange(n):
+  for i in 1+np.arange(n)+b:
     idx = np.where(evs==i)[0]
     st.append(list(ts_s[idx]))
   return st
@@ -98,13 +96,13 @@ def voltage_hist_plots(name,V_mean, V_var):
     plt.close()
 
 def voltage_time_plots(name,Vpop_mean,Vpop_var,ts_v): # here V_pop is the population mean
-  with PdfPages('vpop_mean_time_%s.pdf'%(name)) as pdf:
+  with PdfPages('%s_vpop_mean_time.pdf'%(name)) as pdf:
     plt.plot(ts_v,Vpop_mean)
     plt.xlabel('Time(ms)')
     plt.ylabel('Population Voltage Mean (mV)')
     pdf.savefig()
     plt.close()
-  with PdfPages('vpop_var_time_%s.pdf'%(name)) as pdf:
+  with PdfPages('%s_vpop_var_time.pdf'%(name)) as pdf:
     plt.plot(ts_v,Vpop_var)
     plt.xlabel('Time(ms)')
     plt.ylabel('Population Voltage Variance (mV^2)')
@@ -130,10 +128,10 @@ def spike_psd_plot(name,t,S):
   P = np.zeros([len(freq)])
   F = np.fft.rfft(S-np.mean(S))*timestep
   P = abs(F)**2
-  with PdfPages('spike_psd_%s.pdf'%(name)) as pdf:
+  with PdfPages('%s_spike_psd.pdf'%(name)) as pdf:
     plt.plot(freq,P)
-    #plt.xlim([0,20])
-    #plt.ylim([0,1])
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel('Spike PSD')
     pdf.savefig()
     plt.close()
 
@@ -148,7 +146,7 @@ def pair_correlate(ind_st,time_bins):
   return hist_array, coeff_vector
 
 def coefficient_histogram(name,coeff_vector):
-  with PdfPages('coeff_hist_%s.pdf'%(name)) as pdf:
+  with PdfPages('%s_coeff_hist.pdf'%(name)) as pdf:
     plt.hist(coeff_vector)
     plt.xlabel('Correlation coefficient')
     plt.ylabel('Number of occurrences')
