@@ -26,22 +26,47 @@ def plotting_args():
   R = args.realisations
   return name,n,T,R
 
-def twostep_connect(n,conn_spec,syn_spec):
+def twostep_connect(n,m,q,syn_spec):
   raw_connect = nest.GetConnections()
-  l = len(raw_connect)
-  set_connect = np.zeros([l,2],dtype = int)
-  flip_connect = np.zeros([l,2],dtype = int)
-  for i in np.arange(l):
-    set_connect[i] = [raw_connect[i][0],raw_connect[i][1]]
-    flip_connect[i] = [raw_connect[i][1],raw_connect[i][0]]
+  set_connect = np.array(raw_connect)[:,:2]
   
-  for i in np.arange(l):
-    if any((set_connect[:]==flip_connect[i]).all(1))==False:
-      if flip_connect[i][0] < n+1: # exc presynaptic neuron
-        #print('excitatory')
-        #print(flip_connect[i][0],flip_connect[i][1])
-        nest.Connect([flip_connect[i][0]],[flip_connect[i][1]],conn_spec[0],syn_spec[0])
-      else: # inh presynaptic neuron
-        #print('inhibitory')
-        #print(flip_connect[i][0],flip_connect[i][1])
-        nest.Connect([flip_connect[i][0]],[flip_connect[i][1]],conn_spec[1],syn_spec[0])
+  adjmat = np.zeros([n+m,n+m])
+  adjmat[set_connect[:,0]-1,set_connect[:,1]-1] = 1
+  newmat = (adjmat.T-adjmat) > 0
+  #newmat[newmat<0]=0
+  #newmat = newmat>0
+
+  #L = int(newmat.sum())
+  R = np.random.rand(int(newmat.sum()))
+  ind = R > q
+  #newmat.astype(bool)
+  row,col = np.where(newmat)
+  newmat[row[ind],col[ind]] = 0
+  #newmat[row[R<(1-q)],col[R<(1-q)]] = 0
+  #print('newmat sum = %s'%(newmat.sum()))
+  pre,post = np.where(newmat)
+  pre += 1
+  post += 1
+  pre_exc = pre[pre < n+1]
+  post_exc = post[pre < n+1]
+  pre_inh = pre[pre > n]
+  post_inh = post[pre > n]
+  #print(pre_exc)
+
+  # exc_pre = []
+  # exc_post = []
+  # inh_pre = []
+  # inh_post = []
+  # for i in np.arange(l):
+  #   if any((set_connect[:]==flip_connect[i]).all(1))==False:
+  #     if flip_connect[i][0] < n+1: # exc presynaptic neuron
+  #       exc_pre += [flip_connect[i][0]]
+  #       exc_post += [flip_connect[i][1]]
+  #       #nest.Connect([flip_connect[i][0]],[flip_connect[i][1]],conn_spec[0],syn_spec[0])
+  #     else: # inh presynaptic neuron
+  #       inh_pre += [flip_connect[i][0]]
+  #       inh_post += [flip_connect[i][1]]
+  #       #nest.Connect([flip_connect[i][0]],[flip_connect[i][1]],conn_spec[1],syn_spec[0])
+  
+  nest.Connect(pre_exc,post_exc,'one_to_one',syn_spec[0])
+  nest.Connect(pre_inh,post_inh,'one_to_one',syn_spec[1])

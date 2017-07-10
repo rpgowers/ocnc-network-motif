@@ -86,7 +86,7 @@ for i in np.arange(R):
   nest.Connect(exc, inh, conn_dict_ei, syn_dict_ei)
   nest.Connect(inh, exc, conn_dict_ie, syn_dict_ie)
   # second step of connections
-  control_flow.twostep_connect(n,conn_spec_q,syn_spec_q)
+  control_flow.twostep_connect(n,m,q_ee,syn_spec_q)
 
   poisson_noise = nest.Create("poisson_generator", n=1, params=poisson_dict)
   multimeter_exc = nest.Create("multimeter", n=1, params={"withtime":True, "record_from":["V_m"]})

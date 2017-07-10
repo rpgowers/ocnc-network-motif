@@ -6,19 +6,20 @@ import data_analysis
 import control_flow
 
 nest.sli_run("M_WARNING setverbosity")
+tick = time.time()
 
 n, T_ms, R = control_flow.common_args()
-m = int(n/2)
+m = int(n/4)
 
-p_ee = 0.11
-p_ii = 0.38
-p_ei = 0.15
-p_ie = 0.46
+p_ee = 0.07925 # before 0.1
+p_ii = 0.317 # before 0.4
+p_ei = 0.07925
+p_ie = 0.317
 # note currently must keep q_ee = q_ei and q_ii = q_ie
-q_ee = 0.475
-q_ii = 0.325
-q_ei = 0.475
-q_ie = 0.325
+q_ee = 0.3#0.475
+q_ii = 0.3#0.325
+q_ei = 0.3#0.475
+q_ie = 0.3#0.325
 
 conn_dict_ee = {'rule': 'pairwise_bernoulli', 'p': p_ee, "autapses" : False}
 conn_dict_ii = {'rule': 'pairwise_bernoulli', 'p': p_ii, "autapses" : False}
@@ -52,7 +53,7 @@ for i in np.arange(R):
   # colors = ["lightpink","powderblue"]
   # visualize.plot_network(nodes, colors, filename)
   
-  control_flow.twostep_connect(n,conn_spec_q,syn_spec)
+  control_flow.twostep_connect(n,m,q_ee,syn_spec)
 
   real_connect_after[i] =len(nest.GetConnections())
 
@@ -74,3 +75,6 @@ print(np.mean(real_connect_before))
 
 print(ee_after+ii_after+ei_after+ie_after)
 print(np.mean(real_connect_after))
+
+tock = time.time()
+print('Elapsed time  = %.3f s'%(tock-tick))
