@@ -1,16 +1,15 @@
 import numpy as np
 import data_analysis
+import control_flow
 import time
 
 tick = time.time()
 
 data_dir = 'raw_data'
 plot_dir = 'plots'
-name = 'bernoulli_ei' # change later for generality
-T_ms = 10000
-R = 100
-n = 800
-m = 200
+#name = 'bernoulli_ei' # change later for generality
+name, n, T_ms, R = control_flow.plotting_args()
+m = int(n/4)
 
 # raw spiking data
 bin_step = 1
