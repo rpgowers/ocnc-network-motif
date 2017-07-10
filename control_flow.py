@@ -13,19 +13,22 @@ def common_args():
   R = args.realisations
   return n,T,R
 
-def twostep_connect(net,p):
-  raw_connect = nest.GetConnections(net)
+def twostep_connect(n,conn_spec,syn_spec):
+  raw_connect = nest.GetConnections()
   l = len(raw_connect)
   set_connect = np.zeros([l,2],dtype = int)
   flip_connect = np.zeros([l,2],dtype = int)
   for i in np.arange(l):
     set_connect[i] = [raw_connect[i][0],raw_connect[i][1]]
     flip_connect[i] = [raw_connect[i][1],raw_connect[i][0]]
-  conn_spec = {'rule':'pairwise_bernoulli','p':p}
-  syn_spec = {"delay": 1.0, "weight": 150.0}
+  
   for i in np.arange(l):
     if any((set_connect[:]==flip_connect[i]).all(1))==False:
-      #print(net[flip_connect[i][0]-1],net[flip_connect[i][1]-1])
-      #print(flip_connect[i][0],flip_connect[i][1])
-      nest.Connect([flip_connect[i][0]],[flip_connect[i][1]],conn_spec,syn_spec)
-      #nest.Connect([net[flip_connect[i][0]-1]],[net[flip_connect[i][1]-1]],conn_spec,syn_spec)
+      if flip_connect[i][0] < n+1: # exc presynaptic neuron
+        #print('excitatory')
+        #print(flip_connect[i][0],flip_connect[i][1])
+        nest.Connect([flip_connect[i][0]],[flip_connect[i][1]],conn_spec[0],syn_spec[0])
+      else: # inh presynaptic neuron
+        #print('inhibitory')
+        #print(flip_connect[i][0],flip_connect[i][1])
+        nest.Connect([flip_connect[i][0]],[flip_connect[i][1]],conn_spec[1],syn_spec[0])
