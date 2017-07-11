@@ -17,10 +17,8 @@ m = int(n/4)
 exc_dict = {"I_e": 0.0, "tau_m": 20.0}
 inh_dict = {"I_e": 0.0, "tau_m": 20.0}
 
-
-
 # note currently must keep q_ee = q_ei and q_ii = q_ie
-q = 0.3
+q = 0.5
 q_ee = q
 q_ii = q
 q_ei = q
@@ -149,4 +147,4 @@ data = np.array([ts_v,Vpop_mean_inh,Vpop_var_inh]).T
 np.savetxt('%s/%s_vmom_ipop_q=%s.txt'%(data_dir,name,q_ee),data)
 
 tock = time.time()
-print(tock-tick)
+print('Elapsed time = %.3f'%(tock-tick))

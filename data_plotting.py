@@ -17,7 +17,7 @@ time_bins = np.arange(0,T_ms+bin_step,bin_step)
 f_exc = np.zeros([int(T_ms/bin_step)],dtype = int)
 f_inh = np.zeros([int(T_ms/bin_step)], dtype = int)
 
-big_bin = 10 # time bins used for pairwise comparisons
+big_bin = 20 # time bins used for pairwise comparisons
 time_bins_big = np.arange(0,T_ms+big_bin,big_bin)
 exc_coeff_all = []
 inh_coeff_all = []

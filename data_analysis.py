@@ -160,7 +160,11 @@ def pair_correlate(ind_st,time_bins):
 
 def coefficient_histogram(name,coeff_vector):
   with PdfPages('%s_coeff_hist.pdf'%(name)) as pdf:
-    plt.hist(coeff_vector)
+    delt = 0.05
+    N = len(coeff_vector)
+    #print(N)
+    c_bins = np.arange(-0.25,0.25+delt,delt)
+    plt.hist(np.array(coeff_vector),bins=c_bins,normed=True)
     plt.xlabel('Correlation coefficient')
     plt.ylabel('Number of occurrences')
     pdf.savefig()
