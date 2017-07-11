@@ -19,12 +19,14 @@ def plotting_args():
   parser.add_argument(type=int, dest='neurons', help='number of neurons')
   parser.add_argument(type=float, dest='sim_time', help='total simulation time in ms')
   parser.add_argument(type=int, dest='realisations', help='total number of realisations', nargs='?', default = 10)
+  parser.add_argument(type=str, dest = 'q_value', help = 'secondary connection probability')
   args = parser.parse_args()
   name = args.name
   n = args.neurons
   T = args.sim_time
   R = args.realisations
-  return name,n,T,R
+  q = args.q_value
+  return name,n,T,R,q
 
 def twostep_connect(n,m,q,syn_spec):
   raw_connect = nest.GetConnections()

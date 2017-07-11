@@ -90,6 +90,7 @@ def double_raster(name,ts_s_exc,send_exc,ts_s_inh,send_inh):
     size = 2
     plt.plot(ts_s_exc,send_exc,'.',label='excitatory',markersize=size)
     plt.plot(ts_s_inh,send_inh,'.',label='inhibitory',markersize=size)
+    plt.xlim([9000,10000])
     plt.xlabel('Time (ms)')
     plt.ylabel('Neuron Number')
     plt.legend()

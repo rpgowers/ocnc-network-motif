@@ -8,7 +8,7 @@ tick = time.time()
 data_dir = 'raw_data'
 plot_dir = 'plots'
 #name = 'bernoulli_ei' # change later for generality
-name, n, T_ms, R = control_flow.plotting_args()
+name, n, T_ms, R, q = control_flow.plotting_args()
 m = int(n/4)
 
 # raw spiking data
@@ -23,8 +23,8 @@ exc_coeff_all = []
 inh_coeff_all = []
 
 for i in np.arange(R): 
-  data_exc_spike = np.load('%s/%s_raw_exc_spikes_R=%s.npy'%(data_dir,name,i)).T
-  data_inh_spike = np.load('%s/%s_raw_inh_spikes_R=%s.npy'%(data_dir,name,i)).T
+  data_exc_spike = np.load('%s/%s_raw_exc_spikes_q=%s_R=%s.npy'%(data_dir,name,q,i)).T
+  data_inh_spike = np.load('%s/%s_raw_inh_spikes_q=%s_R=%s.npy'%(data_dir,name,q,i)).T
   ts_s_exc = data_exc_spike[0]
   send_exc = data_exc_spike[1]
   ts_s_inh = data_inh_spike[0]
@@ -40,21 +40,21 @@ for i in np.arange(R):
   inh_coeff_all += list(inh_coeff)
 
 # spike psds
-data_analysis.spike_psd_plot('%s/%s_epop'%(plot_dir,name),time_bins[1:],f_exc)
-data_analysis.spike_psd_plot('%s/%s_ipop'%(plot_dir,name),time_bins[1:],f_inh)
+data_analysis.spike_psd_plot('%s/%s_q=%s_epop'%(plot_dir,name,q),time_bins[1:],f_exc)
+data_analysis.spike_psd_plot('%s/%s_q=%s_ipop'%(plot_dir,name,q),time_bins[1:],f_inh)
 
 # spike pairwise correlations
-data_analysis.coefficient_histogram('%s/%s_epop'%(plot_dir,name),exc_coeff_all)
-data_analysis.coefficient_histogram('%s/%s_ipop'%(plot_dir,name),inh_coeff_all)
+data_analysis.coefficient_histogram('%s/%s_q=%s_epop'%(plot_dir,name,q),exc_coeff_all)
+data_analysis.coefficient_histogram('%s/%s_q=%s_ipop'%(plot_dir,name,q),inh_coeff_all)
 
 # voltage means and variances
-data_mom = np.loadtxt('%s/%s_vmom_epop.txt'%(data_dir,name)).T
-data_analysis.voltage_time_plots('%s/%s_epop'%(plot_dir,name),data_mom[1],data_mom[2],data_mom[0])
-data_mom = np.loadtxt('%s/%s_vmom_ipop.txt'%(data_dir,name)).T
-data_analysis.voltage_time_plots('%s/%s_ipop'%(plot_dir,name),data_mom[1],data_mom[2],data_mom[0])
+data_mom = np.loadtxt('%s/%s_vmom_epop_q=%s.txt'%(data_dir,name,q)).T
+data_analysis.voltage_time_plots('%s/%s_q=%s_epop'%(plot_dir,name,q),data_mom[1],data_mom[2],data_mom[0])
+data_mom = np.loadtxt('%s/%s_vmom_ipop_q=%s.txt'%(data_dir,name,q)).T
+data_analysis.voltage_time_plots('%s/%s_q=%s_ipop'%(plot_dir,name,q),data_mom[1],data_mom[2],data_mom[0])
 
 #data_analysis.spike_plot('%s/%s_raster_plot'%(plot_dir,name),dSD)
-data_analysis.double_raster('%s/%s'%(plot_dir,name),ts_s_exc,send_exc,ts_s_inh,send_inh)
+data_analysis.double_raster('%s/%s_q=%s'%(plot_dir,name,q),ts_s_exc,send_exc,ts_s_inh,send_inh)
 
 tock = time.time()
 print(tock-tick)

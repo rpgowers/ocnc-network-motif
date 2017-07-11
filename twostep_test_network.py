@@ -11,15 +11,35 @@ tick = time.time()
 n, T_ms, R = control_flow.common_args()
 m = int(n/4)
 
-p_ee = 0.07925 # before 0.1
-p_ii = 0.317 # before 0.4
-p_ei = 0.07925
-p_ie = 0.317
+# for q  = 0.3
+# p_ee = 0.07925
+# p_ii = 0.317
+# p_ei = 0.07925
+# p_ie = 0.317
+
+# for q = 0.1
+# p_ee = 0.09215
+# p_ii = 0.3686
+# p_ei = 0.09215
+# p_ie = 0.3686
+
+# for q = 0.05
+# p_ee = 0.09595
+# p_ii = 0.3838
+# p_ei = 0.09595
+# p_ie = 0.3838
+
+# for q = 0.01
+p_ee = 0.09917
+p_ii = 0.39668
+p_ei = 0.09917
+p_ie = 0.39668
+
 # note currently must keep q_ee = q_ei and q_ii = q_ie
-q_ee = 0.3#0.475
-q_ii = 0.3#0.325
-q_ei = 0.3#0.475
-q_ie = 0.3#0.325
+q_ee = 0.01
+q_ii = 0.01
+q_ei = 0.01
+q_ie = 0.01
 
 conn_dict_ee = {'rule': 'pairwise_bernoulli', 'p': p_ee, "autapses" : False}
 conn_dict_ii = {'rule': 'pairwise_bernoulli', 'p': p_ii, "autapses" : False}
@@ -28,7 +48,7 @@ conn_dict_ie = {'rule': 'pairwise_bernoulli', 'p': p_ie, "autapses" : False}
 syn_spec = [{"delay": 1.0, "weight": 150.0}, {"delay": 1.0, "weight": -150.0}]
 conn_spec_q = [{'rule':'pairwise_bernoulli','p':q_ee}, {'rule':'pairwise_bernoulli','p':q_ii}]
 
-start_seed = 100005
+start_seed = 100001
 N_vp = nest.GetKernelStatus(['total_num_virtual_procs'])[0]
 
 real_connect_before = np.zeros(R)

@@ -17,20 +17,45 @@ m = int(n/4)
 exc_dict = {"I_e": 150.0, "tau_m": 20.0}
 inh_dict = {"I_e": 150.0, "tau_m": 20.0}
 
-p_ee = 0.07925 # before 0.1
-p_ii = 0.317 # before 0.4
-p_ei = 0.07925
-p_ie = 0.317
+# for q = 0.3
+# p_ee = 0.07925 # before 0.1
+# p_ii = 0.317 # before 0.4
+# p_ei = 0.07925
+# p_ie = 0.317
+
+# # for q = 0.1
+# p_ee = 0.09215
+# p_ii = 0.3686
+# p_ei = 0.09215
+# p_ie = 0.3686
+
+# for q = 0.05
+# p_ee = 0.09595
+# p_ii = 0.3838
+# p_ei = 0.09595
+# p_ie = 0.3838
+
+# for q = 0.01
+#p_ee = 0.09917
+#p_ii = 0.39668
+#p_ei = 0.09917
+#p_ie = 0.39668
+
+# for q = 0
+p_ee = 0.1
+p_ii = 0.4
+p_ei = 0.1
+p_ie = 0.4
 
 ee_before = n*(n-1)*p_ee
 ii_before = m*(m-1)*p_ii
 ei_before = n*m*p_ei
 ie_before = n*m*p_ie
 # note currently must keep q_ee = q_ei and q_ii = q_ie
-q_ee = 0.3
-q_ii = 0.3
-q_ei = 0.3
-q_ie = 0.3
+q_ee = 0.00
+q_ii = 0.00
+q_ei = 0.00
+q_ie = 0.00
 
 ee_after = ee_before*(1+(1-p_ee)*q_ee)
 ii_after = ii_before*(1+(1-p_ii)*q_ii)
@@ -122,17 +147,17 @@ for i in np.arange(R):
   raw_spikes_exc += len(ts_s_exc)
   raw_spikes_inh += len(ts_s_inh)
   # save spikes
-  np.save('%s/%s_raw_exc_spikes_R=%s'%(data_dir,name,i),np.array([ts_s_exc,send_exc]).T)
-  np.save('%s/%s_raw_inh_spikes_R=%s'%(data_dir,name,i),np.array([ts_s_inh,send_inh]).T)
+  np.save('%s/%s_raw_exc_spikes_q=%s_R=%s'%(data_dir,name,q_ee,i),np.array([ts_s_exc,send_exc]).T)
+  np.save('%s/%s_raw_inh_spikes_q=%s_R=%s'%(data_dir,name,q_ee,i),np.array([ts_s_inh,send_inh]).T)
 
 print(raw_spikes_exc/(n*R*T_ms/1000))
 print(raw_spikes_inh/(m*R*T_ms/1000))
 
 # voltage mean and variance with time
 data = np.array([ts_v,Vpop_mean_exc,Vpop_var_exc]).T
-np.savetxt('%s/%s_vmom_epop.txt'%(data_dir,name),data)
+np.savetxt('%s/%s_vmom_epop_q=%s.txt'%(data_dir,name,q_ee),data)
 data = np.array([ts_v,Vpop_mean_inh,Vpop_var_inh]).T
-np.savetxt('%s/%s_vmom_ipop.txt'%(data_dir,name),data)
+np.savetxt('%s/%s_vmom_ipop_q=%s.txt'%(data_dir,name,q_ee),data)
 
 tock = time.time()
 print(tock-tick)
