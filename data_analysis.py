@@ -85,6 +85,18 @@ def spike_plot(name,dSD):
     pdf.savefig(bbox_inches='tight')
     plt.close()
 
+def double_raster(name,ts_s_exc,send_exc,ts_s_inh,send_inh):
+  with PdfPages('%s_double_raster.pdf'%(name)) as pdf:
+    size = 2
+    plt.plot(ts_s_exc,send_exc,'.',label='excitatory',markersize=size)
+    plt.plot(ts_s_inh,send_inh,'.',label='inhibitory',markersize=size)
+    plt.xlabel('Time (ms)')
+    plt.ylabel('Neuron Number')
+    plt.legend()
+    pdf.savefig(bbox_inches='tight')
+    plt.close()
+
+
 def voltage_hist_plots(name,V_mean, V_var):
   with PdfPages('vmean_histogram_%s.pdf'%(name)) as pdf:
     plt.hist(V_mean)

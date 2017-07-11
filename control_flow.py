@@ -33,17 +33,12 @@ def twostep_connect(n,m,q,syn_spec):
   adjmat = np.zeros([n+m,n+m])
   adjmat[set_connect[:,0]-1,set_connect[:,1]-1] = 1
   newmat = (adjmat.T-adjmat) > 0
-  #newmat[newmat<0]=0
-  #newmat = newmat>0
 
-  #L = int(newmat.sum())
   R = np.random.rand(int(newmat.sum()))
   ind = R > q
-  #newmat.astype(bool)
   row,col = np.where(newmat)
   newmat[row[ind],col[ind]] = 0
-  #newmat[row[R<(1-q)],col[R<(1-q)]] = 0
-  #print('newmat sum = %s'%(newmat.sum()))
+
   pre,post = np.where(newmat)
   pre += 1
   post += 1
