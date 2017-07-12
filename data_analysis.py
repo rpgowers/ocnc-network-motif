@@ -90,7 +90,7 @@ def double_raster(name,ts_s_exc,send_exc,ts_s_inh,send_inh):
     size = 2
     plt.plot(ts_s_exc,send_exc,'.',label='excitatory',markersize=size)
     plt.plot(ts_s_inh,send_inh,'.',label='inhibitory',markersize=size)
-    plt.xlim([9000,10000])
+    plt.xlim([8000,10000])
     plt.xlabel('Time (ms)')
     plt.ylabel('Neuron Number')
     plt.legend()
@@ -160,12 +160,12 @@ def pair_correlate(ind_st,time_bins):
 
 def coefficient_histogram(name,coeff_vector):
   with PdfPages('%s_coeff_hist.pdf'%(name)) as pdf:
-    delt = 0.05
+    delt = 0.025
     N = len(coeff_vector)
     #print(N)
-    c_bins = np.arange(-0.25,0.25+delt,delt)
+    c_bins = np.arange(-0.2,0.7+delt,delt)
     plt.hist(np.array(coeff_vector),bins=c_bins,normed=True)
     plt.xlabel('Correlation coefficient')
-    plt.ylabel('Number of occurrences')
+    plt.ylabel('Frequency Density')
     pdf.savefig()
     plt.close()

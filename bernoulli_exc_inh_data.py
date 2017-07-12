@@ -28,17 +28,17 @@ conn_dict_ei = {'rule': 'pairwise_bernoulli', 'p': p_ei, "autapses" : False}
 conn_dict_ie = {'rule': 'pairwise_bernoulli', 'p': p_ie, "autapses" : False}
 
 d = 1.0
-Jee = 20
-Jii = -20*4
-Jei = 20
-Jie = -20*4
+Jee = 40
+Jii = -40*4
+Jei = 40
+Jie = -40*4
 
 syn_dict_ee = {"delay": d, "weight": Jee}
 syn_dict_ii = {"delay": d, "weight": Jii}
 syn_dict_ei = {"delay": d, "weight": Jei}
 syn_dict_ie = {"delay": d, "weight": Jie}
 
-poisson_dict = {'rate' : 1500.0, 'origin' : 0.0}
+poisson_dict = {'rate' : 1200.0, 'origin' : 0.0}
 conn_dict_poisson = {'rule': 'all_to_all'}
 syn_dict_poisson = {"delay": 1.0, "weight": 20.0}
 

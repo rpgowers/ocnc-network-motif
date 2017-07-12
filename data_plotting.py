@@ -53,7 +53,6 @@ data_analysis.voltage_time_plots('%s/%s_q=%s_epop'%(plot_dir,name,q),data_mom[1]
 data_mom = np.loadtxt('%s/%s_vmom_ipop_q=%s.txt'%(data_dir,name,q)).T
 data_analysis.voltage_time_plots('%s/%s_q=%s_ipop'%(plot_dir,name,q),data_mom[1],data_mom[2],data_mom[0])
 
-#data_analysis.spike_plot('%s/%s_raster_plot'%(plot_dir,name),dSD)
 data_analysis.double_raster('%s/%s_q=%s'%(plot_dir,name,q),ts_s_exc,send_exc,ts_s_inh,send_inh)
 
 tock = time.time()
