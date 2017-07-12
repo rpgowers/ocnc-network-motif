@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pylab as plt
 from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib as mp
+mp.rcParams.update({'font.size':14})
 
 def voltage_extract(dmm,n,plot=False):
   ts_v = dmm[0]["events"]["times"][0::n]
@@ -58,21 +60,16 @@ def st_extract(evs,ts_s,n,b):
   for i in 1+np.arange(n)+b:
     idx = np.where(evs==i)[0]
     st.append(list(ts_s[idx]))
+  st = [x for x in st if x != []] # removes empty lists
   return st
 
-def isi_extract(dSD,n,plot=False):
-  evs = dSD["senders"]
-  ts_s = dSD["times"]
+def isi_extract(evs,ts_s,n,b):
   isi = []
-  for i in 1+np.arange(n):
+  for i in 1+np.arange(n)+b:
     idx = np.where(evs==i)[0]
     isi.append(list(np.diff(ts_s[idx])))
-  if plot == True:
-    isi_plot = [item for sublist in isi for item in sublist]
-    with PdfPages('isi_histogram.pdf') as pdf:
-      plt.hist(np.array(isi_plot))
-      pdf.savefig()
-      plt.close()
+
+  isi = [x for x in isi if x != []] # removes empty lists
   return isi
 
 def spike_plot(name,dSD):
@@ -90,7 +87,7 @@ def double_raster(name,ts_s_exc,send_exc,ts_s_inh,send_inh):
     size = 2
     plt.plot(ts_s_exc,send_exc,'.',label='excitatory',markersize=size)
     plt.plot(ts_s_inh,send_inh,'.',label='inhibitory',markersize=size)
-    plt.xlim([8000,10000])
+    plt.xlim([0,10000])
     plt.xlabel('Time (ms)')
     plt.ylabel('Neuron Number')
     plt.legend()
@@ -122,11 +119,16 @@ def voltage_time_plots(name,Vpop_mean,Vpop_var,ts_v): # here V_pop is the popula
     pdf.savefig()
     plt.close()
 
-def isi_hist_plot(name,isi):
-  with PdfPages('isi_histogram_%s.pdf'%(name)) as pdf:
-      plt.hist(np.array(isi))
-      pdf.savefig()
-      plt.close()
+def fr_hist_plot(name,q,isi):
+  with PdfPages('%s_fr_histogram.pdf'%(name)) as pdf:
+    delt = 1
+    f_bins = np.arange(0,40+delt,delt)
+    plt.hist(np.array(isi),bins=f_bins,normed=True)
+    plt.xlabel('Firing Rate (Hz)')
+    plt.ylabel('Frequency Density')
+    plt.title('Firing Interspike interval for q=%s'%(q))
+    pdf.savefig(bbox_inches='tight')
+    plt.close()
 
 def psd_mean_plot(name,psd,freq):
   with PdfPages('psd_mean_%s.pdf'%(name)) as pdf:
@@ -139,12 +141,14 @@ def spike_psd_plot(name,t,S):
   N = len(t)
   freq = np.fft.rfftfreq(len(t), d=timestep)
   P = np.zeros([len(freq)])
+  #F = np.fft.rfft(S)*timestep
   F = np.fft.rfft(S-np.mean(S))*timestep
   P = abs(F)**2
   with PdfPages('%s_spike_psd.pdf'%(name)) as pdf:
-    plt.plot(freq,P)
+    plt.loglog(freq,P)
     plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Spike PSD')
+    plt.ylabel('Spike PSD (1/Hz)')
+    plt.ylim(ymin = 0.1)
     pdf.savefig()
     plt.close()
 
@@ -158,14 +162,16 @@ def pair_correlate(ind_st,time_bins):
   coeff_vector = np.nan_to_num(coeff_matrix[np.tri(np.shape(coeff_matrix)[0],k=-1,dtype=bool)])
   return hist_array, coeff_vector
 
-def coefficient_histogram(name,coeff_vector):
+def coefficient_histogram(name,q,coeff_vector):
   with PdfPages('%s_coeff_hist.pdf'%(name)) as pdf:
     delt = 0.025
     N = len(coeff_vector)
     #print(N)
-    c_bins = np.arange(-0.2,0.7+delt,delt)
+    c_bins = np.arange(-0.15,0.65+delt,delt)
     plt.hist(np.array(coeff_vector),bins=c_bins,normed=True)
+    plt.title('Pairwise Correlation Coefficient for q=%s'%(q))
     plt.xlabel('Correlation coefficient')
     plt.ylabel('Frequency Density')
+    plt.ylim([0,8])
     pdf.savefig()
     plt.close()

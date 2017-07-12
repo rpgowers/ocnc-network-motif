@@ -21,6 +21,8 @@ big_bin = 20 # time bins used for pairwise comparisons
 time_bins_big = np.arange(0,T_ms+big_bin,big_bin)
 exc_coeff_all = []
 inh_coeff_all = []
+exc_fr_all = []
+inh_fr_all = []
 
 for i in np.arange(R): 
   data_exc_spike = np.load('%s/%s_raw_exc_spikes_q=%s_R=%s.npy'%(data_dir,name,q,i)).T
@@ -38,14 +40,25 @@ for i in np.arange(R):
   _, inh_coeff = data_analysis.pair_correlate(inh_st,time_bins_big)
   exc_coeff_all += list(exc_coeff)
   inh_coeff_all += list(inh_coeff)
+  # isi intervals
+  exc_isi = data_analysis.isi_extract(send_exc,ts_s_exc,n,0)
+  inh_isi = data_analysis.isi_extract(send_inh,ts_s_inh,m,n)
+  exc_fr_mean = [1000/np.mean(xi) for xi in exc_isi]
+  inh_fr_mean = [1000/np.mean(xi) for xi in inh_isi]
+  exc_fr_all += list(exc_fr_mean)
+  inh_fr_all += list(inh_fr_mean)
+
+# fr hists
+data_analysis.fr_hist_plot('%s/%s_q=%s_epop'%(plot_dir,name,q),q,exc_fr_all)
+data_analysis.fr_hist_plot('%s/%s_q=%s_ipop'%(plot_dir,name,q),q,inh_fr_all)
 
 # spike psds
 data_analysis.spike_psd_plot('%s/%s_q=%s_epop'%(plot_dir,name,q),time_bins[1:],f_exc)
 data_analysis.spike_psd_plot('%s/%s_q=%s_ipop'%(plot_dir,name,q),time_bins[1:],f_inh)
 
 # spike pairwise correlations
-data_analysis.coefficient_histogram('%s/%s_q=%s_epop'%(plot_dir,name,q),exc_coeff_all)
-data_analysis.coefficient_histogram('%s/%s_q=%s_ipop'%(plot_dir,name,q),inh_coeff_all)
+data_analysis.coefficient_histogram('%s/%s_q=%s_epop'%(plot_dir,name,q),q,exc_coeff_all)
+data_analysis.coefficient_histogram('%s/%s_q=%s_ipop'%(plot_dir,name,q),q,inh_coeff_all)
 
 # voltage means and variances
 data_mom = np.loadtxt('%s/%s_vmom_epop_q=%s.txt'%(data_dir,name,q)).T

@@ -18,7 +18,7 @@ exc_dict = {"I_e": 0.0, "tau_m": 20.0}
 inh_dict = {"I_e": 0.0, "tau_m": 20.0}
 
 # note currently must keep q_ee = q_ei and q_ii = q_ie
-q = 0.9
+q = 1.0
 q_ee = q
 q_ii = q
 q_ei = q
